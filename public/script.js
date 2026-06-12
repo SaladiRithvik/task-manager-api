@@ -5,12 +5,17 @@ let currentTasks = [];
 const errorMessage = document.getElementById('error-message');
 const taskForm = document.getElementById('task-form');
 const taskListBody = document.getElementById('task-list-body');
-const filterStatus = document.getElementById('filter-status');
 const filterPriority = document.getElementById('filter-priority');
 const sortBy = document.getElementById('sort-by');
+const sortDirectionBtn = document.getElementById('sort-direction');
+const statusToggles = document.querySelectorAll('.status-toggle');
 
 const STATUS_ORDER = { todo: 0, in_progress: 1, done: 2 };
-const PRIORITY_ORDER = { high: 0, medium: 1, low: 2 };
+const PRIORITY_ORDER = { low: 0, medium: 1, high: 2 };
+
+let sortAscending = true;
+
+const activeStatuses = new Set(Array.from(statusToggles, (btn) => btn.dataset.status));
 
 const newTaskBtn = document.getElementById('new-task-btn');
 const createFormContainer = document.getElementById('create-form-container');
@@ -57,14 +62,12 @@ function escapeHtml(str) {
 
 function getActiveFilters() {
   return {
-    status: filterStatus.value,
     priority: filterPriority.value,
   };
 }
 
 async function loadTasks(filters = {}) {
   const params = new URLSearchParams();
-  if (filters.status) params.set('status', filters.status);
   if (filters.priority) params.set('priority', filters.priority);
 
   const query = params.toString();
@@ -83,23 +86,33 @@ async function loadTasks(filters = {}) {
   }
 }
 
+function getVisibleTasks() {
+  return currentTasks.filter((task) => activeStatuses.has(task.status));
+}
+
 function getSortedTasks() {
-  const tasks = [...currentTasks];
+  const tasks = getVisibleTasks();
 
   switch (sortBy.value) {
-    case 'due_date':
-      return tasks.sort((a, b) => {
+    case 'due_date': {
+      // no due date = infinite time available, so it sorts after every dated task
+      tasks.sort((a, b) => {
         if (!a.due_date && !b.due_date) return 0;
         if (!a.due_date) return 1;
         if (!b.due_date) return -1;
         return a.due_date.localeCompare(b.due_date);
       });
+      return sortAscending ? tasks : tasks.reverse();
+    }
     case 'status':
-      return tasks.sort((a, b) => STATUS_ORDER[a.status] - STATUS_ORDER[b.status]);
+      tasks.sort((a, b) => STATUS_ORDER[a.status] - STATUS_ORDER[b.status]);
+      return sortAscending ? tasks : tasks.reverse();
     case 'priority':
-      return tasks.sort((a, b) => PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority]);
+      tasks.sort((a, b) => PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority]);
+      return sortAscending ? tasks : tasks.reverse();
     default:
-      return tasks;
+      // API returns newest-first; ascending means oldest-first
+      return sortAscending ? tasks.reverse() : tasks;
   }
 }
 
@@ -107,7 +120,10 @@ function renderTasks(tasks) {
   taskListBody.innerHTML = '';
 
   if (tasks.length === 0) {
-    taskListBody.innerHTML = '<p class="empty-state">No tasks yet — add one to get started.</p>';
+    const message = currentTasks.length === 0
+      ? 'No tasks yet — add one to get started.'
+      : 'No tasks match the selected status groups.';
+    taskListBody.innerHTML = `<p class="empty-state">${message}</p>`;
     return;
   }
 
@@ -280,8 +296,29 @@ document.getElementById('edit-cancel').addEventListener('click', () => {
   closeEditForm();
 });
 
-filterStatus.addEventListener('change', () => loadTasks(getActiveFilters()));
 filterPriority.addEventListener('change', () => loadTasks(getActiveFilters()));
 sortBy.addEventListener('change', () => renderTasks(getSortedTasks()));
+
+sortDirectionBtn.addEventListener('click', () => {
+  sortAscending = !sortAscending;
+  sortDirectionBtn.classList.toggle('desc', !sortAscending);
+  const direction = sortAscending ? 'ascending' : 'descending';
+  sortDirectionBtn.setAttribute('aria-label', `Sort direction: ${direction}`);
+  sortDirectionBtn.title = sortAscending ? 'Ascending' : 'Descending';
+  renderTasks(getSortedTasks());
+});
+
+statusToggles.forEach((toggle) => {
+  toggle.addEventListener('click', () => {
+    const { status } = toggle.dataset;
+    toggle.classList.toggle('active');
+    if (activeStatuses.has(status)) {
+      activeStatuses.delete(status);
+    } else {
+      activeStatuses.add(status);
+    }
+    renderTasks(getSortedTasks());
+  });
+});
 
 loadTasks();

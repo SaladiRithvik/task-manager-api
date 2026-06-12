@@ -18,11 +18,15 @@
   --note-medium: #fef9c3;
   --note-high: #fee2e2;
   --create-bg: #f3effc;
+  --status-progress: #f97316;
+  --status-progress-light: #fb923c;
+  --status-done-light: #22c55e;
+  --page-bg: #e3cdb0;
 }
 
 body {
   font-family: 'Segoe UI', sans-serif;
-  background: var(--light);
+  background: var(--page-bg);
   color: var(--navy);
   line-height: 1.5;
 }
@@ -40,8 +44,21 @@ body {
   margin-bottom: 20px;
 }
 
+.title-box {
+  background: var(--white);
+  border: 2px solid var(--purple-light);
+  border-radius: 14px;
+  padding: 10px 28px;
+  box-shadow: 0 6px 18px rgba(124, 58, 237, 0.2);
+}
+
 .topbar h1 {
-  font-size: 26px;
+  font-size: 34px;
+  letter-spacing: 1px;
+  background: linear-gradient(135deg, var(--purple), var(--purple-light));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .topbar-controls {
@@ -49,6 +66,71 @@ body {
   align-items: flex-end;
   gap: 16px;
   flex-wrap: wrap;
+}
+
+.status-toggles {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.status-toggle {
+  min-width: 160px;
+  text-align: center;
+}
+
+.btn.status-toggle {
+  height: 46px;
+  padding: 10px 26px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  border-radius: 999px;
+}
+
+.status-toggle[data-status="todo"] {
+  border-color: var(--purple-light);
+}
+
+.status-toggle[data-status="in_progress"] {
+  border-color: var(--status-progress-light);
+}
+
+.status-toggle[data-status="done"] {
+  border-color: var(--status-done-light);
+}
+
+.status-toggle[data-status="todo"].active {
+  background: linear-gradient(135deg, var(--purple), var(--purple-light));
+  color: var(--white);
+  border-color: var(--purple);
+  box-shadow: 0 6px 18px rgba(124, 58, 237, 0.45);
+}
+
+.status-toggle[data-status="todo"].active:hover {
+  background: linear-gradient(135deg, var(--purple-light), var(--purple));
+}
+
+.status-toggle[data-status="in_progress"].active {
+  background: linear-gradient(135deg, var(--status-progress), var(--status-progress-light));
+  color: var(--white);
+  border-color: var(--status-progress);
+  box-shadow: 0 6px 18px rgba(249, 115, 22, 0.45);
+}
+
+.status-toggle[data-status="in_progress"].active:hover {
+  background: linear-gradient(135deg, var(--status-progress-light), var(--status-progress));
+}
+
+.status-toggle[data-status="done"].active {
+  background: linear-gradient(135deg, var(--success), var(--status-done-light));
+  color: var(--white);
+  border-color: var(--success);
+  box-shadow: 0 6px 18px rgba(22, 163, 74, 0.45);
+}
+
+.status-toggle[data-status="done"].active:hover {
+  background: linear-gradient(135deg, var(--status-done-light), var(--success));
 }
 
 .message {
@@ -84,11 +166,22 @@ body {
   font-weight: 600;
 }
 
+.sort-control {
+  display: flex;
+  gap: 6px;
+}
+
+.sort-control select {
+  flex: 1;
+  min-width: 0;
+}
+
 .card {
   background: var(--white);
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 20px;
+  box-shadow: 0 10px 28px rgba(10, 15, 46, 0.16);
 }
 
 .card h2 {
@@ -151,27 +244,33 @@ textarea {
 .btn {
   height: 38px;
   padding: 8px 16px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
+  border-radius: 10px;
+  border: 2px solid var(--border);
   background: var(--white);
   color: var(--navy);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
+  box-shadow: 0 2px 6px rgba(10, 15, 46, 0.08);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
 
 .btn:hover {
   background: var(--light);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(10, 15, 46, 0.14);
 }
 
 .btn-primary {
-  background: var(--purple);
+  background: linear-gradient(135deg, var(--purple), var(--purple-light));
   color: var(--white);
   border-color: var(--purple);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.35);
 }
 
 .btn-primary:hover {
-  background: var(--purple-light);
+  background: linear-gradient(135deg, var(--purple-light), var(--purple));
+  box-shadow: 0 6px 16px rgba(124, 58, 237, 0.45);
 }
 
 .btn-danger {
@@ -182,6 +281,25 @@ textarea {
 
 .btn-danger:hover {
   background: #fee2e2;
+}
+
+.sort-direction-btn {
+  width: 38px;
+  padding: 0;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sort-direction-btn svg {
+  width: 28px;
+  height: 28px;
+  transition: transform 0.15s ease;
+}
+
+.sort-direction-btn.desc svg {
+  transform: rotate(180deg);
 }
 
 .notes-grid {
@@ -302,13 +420,13 @@ textarea {
 }
 
 .badge.status-todo {
-  background: #e0e7ff;
-  color: #3730a3;
+  background: #ede9fe;
+  color: #6d28d9;
 }
 
 .badge.status-in_progress {
-  background: #fef3c7;
-  color: #92400e;
+  background: #ffedd5;
+  color: #c2410c;
 }
 
 .badge.status-done {
@@ -317,13 +435,13 @@ textarea {
 }
 
 .badge.priority-low {
-  background: #f1f5f9;
-  color: var(--gray);
+  background: #e0f2fe;
+  color: #0369a1;
 }
 
 .badge.priority-medium {
-  background: #ede9fe;
-  color: var(--purple);
+  background: #fef9c3;
+  color: #854d0e;
 }
 
 .badge.priority-high {

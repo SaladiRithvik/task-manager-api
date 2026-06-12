@@ -9,18 +9,16 @@
 <body>
   <div class="page">
     <header class="topbar">
-      <h1>Task Manager</h1>
+      <div class="title-box">
+        <h1>Task Manager</h1>
+      </div>
+      <div id="status-toggles" class="status-toggles">
+        <button type="button" class="btn status-toggle active" data-status="todo">Todo</button>
+        <button type="button" class="btn status-toggle active" data-status="in_progress">In Progress</button>
+        <button type="button" class="btn status-toggle active" data-status="done">Done</button>
+      </div>
       <div class="topbar-controls">
         <section id="filters" class="filters">
-          <label>
-            Status
-            <select id="filter-status">
-              <option value="">All</option>
-              <option value="todo">Todo</option>
-              <option value="in_progress">In Progress</option>
-              <option value="done">Done</option>
-            </select>
-          </label>
           <label>
             Priority
             <select id="filter-priority">
@@ -32,12 +30,20 @@
           </label>
           <label>
             Order by
-            <select id="sort-by">
-              <option value="default" selected>Newest</option>
-              <option value="due_date">Due Date</option>
-              <option value="status">Status</option>
-              <option value="priority">Priority</option>
-            </select>
+            <div class="sort-control">
+              <select id="sort-by">
+                <option value="created" selected>Creation Date</option>
+                <option value="due_date">Due Date</option>
+                <option value="status">Status</option>
+                <option value="priority">Priority</option>
+              </select>
+              <button type="button" id="sort-direction" class="btn sort-direction-btn" aria-label="Sort direction: ascending" title="Ascending">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <line x1="12" y1="19" x2="12" y2="5"></line>
+                  <polyline points="5 12 12 5 19 12"></polyline>
+                </svg>
+              </button>
+            </div>
           </label>
         </section>
         <button type="button" id="new-task-btn" class="btn btn-primary">+ New Task</button>
