@@ -15,6 +15,8 @@ tests for validation behavior.
 - Filter tasks by `status` and `priority`
 - Centralized error handling that distinguishes validation errors (400) from
   unexpected errors (500)
+- A static frontend (`public/`) — a task board with status filter toggles,
+  sorting (with direction control), and modals for creating/editing tasks
 
 ## Tech Stack
 
@@ -24,7 +26,7 @@ Node.js, Express 5, Sequelize (SQLite), Jest 30 + Supertest
 
 ```bash
 npm install
-npm start    # server on http://localhost:3000
+npm start    # server + frontend on http://localhost:3000
 npm test     # full test suite + coverage report
 ```
 
