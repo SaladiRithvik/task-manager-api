@@ -7,35 +7,52 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <header>
+  <div class="page">
+    <header class="topbar">
       <h1>Task Manager</h1>
+      <div class="topbar-controls">
+        <section id="filters" class="filters">
+          <label>
+            Status
+            <select id="filter-status">
+              <option value="">All</option>
+              <option value="todo">Todo</option>
+              <option value="in_progress">In Progress</option>
+              <option value="done">Done</option>
+            </select>
+          </label>
+          <label>
+            Priority
+            <select id="filter-priority">
+              <option value="">All</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </label>
+          <label>
+            Order by
+            <select id="sort-by">
+              <option value="default" selected>Newest</option>
+              <option value="due_date">Due Date</option>
+              <option value="status">Status</option>
+              <option value="priority">Priority</option>
+            </select>
+          </label>
+        </section>
+        <button type="button" id="new-task-btn" class="btn btn-primary">+ New Task</button>
+      </div>
     </header>
 
     <div id="error-message" class="message hidden"></div>
 
-    <section id="filters" class="filters">
-      <label>
-        Status
-        <select id="filter-status">
-          <option value="">All</option>
-          <option value="todo">Todo</option>
-          <option value="in_progress">In Progress</option>
-          <option value="done">Done</option>
-        </select>
-      </label>
-      <label>
-        Priority
-        <select id="filter-priority">
-          <option value="">All</option>
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-        </select>
-      </label>
-    </section>
+    <main class="board">
+      <div id="task-list-body" class="notes-grid"></div>
+    </main>
+  </div>
 
-    <section class="card">
+  <div id="create-form-container" class="modal-overlay hidden">
+    <div class="modal card modal-create">
       <h2>Add a Task</h2>
       <form id="task-form">
         <div class="field">
@@ -68,30 +85,16 @@
             <input type="date" id="due_date" name="due_date" />
           </div>
         </div>
-        <button type="submit" class="btn btn-primary">Add Task</button>
+        <div class="actions">
+          <button type="submit" class="btn btn-primary">Add Task</button>
+          <button type="button" id="task-form-cancel" class="btn">Cancel</button>
+        </div>
       </form>
-    </section>
+    </div>
+  </div>
 
-    <section class="card">
-      <h2>Tasks</h2>
-      <div class="table-wrapper">
-        <table id="task-list">
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Description</th>
-              <th>Status</th>
-              <th>Priority</th>
-              <th>Due Date</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="task-list-body"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <div id="edit-form-container" class="card hidden">
+  <div id="edit-form-container" class="modal-overlay hidden">
+    <div class="modal card">
       <h2>Edit Task</h2>
       <form id="edit-form">
         <input type="hidden" id="edit-id" />
